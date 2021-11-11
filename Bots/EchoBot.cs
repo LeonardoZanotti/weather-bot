@@ -10,49 +10,13 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
 using System.Net.Http;
-
-struct WeatherObject
-{
-    public string main;
-    public string description;
-}
-
-struct MainObject
-{
-    public double temp;
-    public double feels_like;
-    public double temp_min;
-    public double temp_max;
-    public int pressure;
-    public int humidity;
-}
-
-struct WindObject
-{
-    public double speed;
-}
-
-struct SysObject
-{
-    public string country;
-    public int sunrise;
-    public int sunset;
-}
-
-struct API_RESPONSE
-{
-    public string name;
-    public WeatherObject[] weather;
-    public MainObject main;
-    public WindObject wind;
-    public SysObject sys;
-
-}
+using EchoBot.Models;
 
 namespace EchoBot.Bots
 {
     public class EchoBot : ActivityHandler
     {
+        private BotModels Models = new BotModels();
         private static readonly HttpClient client = new HttpClient();
         public string API_KEY = System.Environment.GetEnvironmentVariable("OPEN_WEATHER_API_KEY", EnvironmentVariableTarget.Machine);
 
@@ -60,7 +24,7 @@ namespace EchoBot.Bots
         {
             Console.WriteLine($"dale {API_KEY}");
             string request = await client.GetStringAsync($"http://api.openweathermap.org/data/2.5/weather?q={turnContext.Activity.Text}&appid={API_KEY}");
-            API_RESPONSE response = Newtonsoft.Json.JsonConvert.DeserializeObject<API_RESPONSE>(request);
+            BotModels.API_RESPONSE response = Newtonsoft.Json.JsonConvert.DeserializeObject<BotModels.API_RESPONSE>(request);
             var replyText = $"{response.name} status: ";
             await turnContext.SendActivityAsync(MessageFactory.Text(replyText, replyText), cancellationToken);
         }
