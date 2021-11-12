@@ -18,7 +18,7 @@ namespace EchoBot.Bots
     {
         private BotModels Models = new BotModels();
         private static readonly HttpClient client = new HttpClient();
-        public string API_KEY = System.Environment.GetEnvironmentVariable("OPEN_WEATHER_API_KEY", EnvironmentVariableTarget.Machine);
+        public string API_KEY = Environment.GetEnvironmentVariable("OPEN_WEATHER_API_KEY");
 
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {

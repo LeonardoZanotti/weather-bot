@@ -6,6 +6,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using EchoBot.Env;
 
 namespace EchoBot
 {
@@ -13,6 +14,7 @@ namespace EchoBot
     {
         public static void Main(string[] args)
         {
+            DotEnv.Load();
             CreateHostBuilder(args).Build().Run();
         }
 
