@@ -15,11 +15,11 @@ This bot has been created using [Bot Framework](https://dev.botframework.com), i
 
 ## To try this sample
 
-- In a terminal, navigate to `WeatherBot`
+- In a terminal, navigate to `weather-bot`
 
     ```bash
     # change into project folder
-    cd WeatherBot
+    cd weather-bot
     ```
 
 - Run the bot from a terminal or from Visual Studio, choose option A or B.
@@ -35,7 +35,7 @@ This bot has been created using [Bot Framework](https://dev.botframework.com), i
 
   - Launch Visual Studio
   - File -> Open -> Project/Solution
-  - Navigate to `WeatherBot` folder
+  - Navigate to `weather-bot` folder
   - Select `WeatherBot.csproj` file
   - Press `F5` to run the project
 
