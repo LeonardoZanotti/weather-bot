@@ -50,10 +50,21 @@ namespace EchoBot.Bots
             float feelsLikeTemp = KelvinToCelsious(response.main.feels_like);
 
             // reply from the bot
-            var replyText = $"{response.name} - {response.sys.country}\n\nSunrise: {sunriseDate}\n\n Sunset: {sunsetDate}\n\nWind speed: {response.wind.speed} m/s\n\nWeather: {response.weather[0].main} ({response.weather[0].description})\n\nTemperature: {temperature} °C\n\nFeels like: {feelsLikeTemp} °C\n\nMaximum temperature: {maxTemperature} °C\n\nMinimum temperature: {minTemperature} °C\n\nPressure: {response.main.pressure} hPa\n\nHumidity: {response.main.humidity}%";
+            var images = new List<CardImage>{
+                new CardImage("https://images-na.ssl-images-amazon.com/images/I/51ZgFK-FbwL.png", "image")
+            };
+
+            var card = new HeroCard(
+                "Weather information",
+                $"{response.name} - {response.sys.country}",
+                $"Sunrise: {sunriseDate}\n\n Sunset: {sunsetDate}\n\nWind speed: {response.wind.speed} m/s\n\nWeather: {response.weather[0].main} ({response.weather[0].description})\n\nTemperature: {temperature} °C\n\nFeels like: {feelsLikeTemp} °C\n\nMaximum temperature: {maxTemperature} °C\n\nMinimum temperature: {minTemperature} °C\n\nPressure: {response.main.pressure} hPa\n\nHumidity: {response.main.humidity}%",
+                images
+            );
+
+            var message = MessageFactory.Attachment(card.ToAttachment());
 
             // send
-            await turnContext.SendActivityAsync(MessageFactory.Text(replyText, replyText), cancellationToken);
+            await turnContext.SendActivityAsync(message, cancellationToken);
         }
 
         protected override async Task OnMembersAddedAsync(IList<ChannelAccount> membersAdded, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
