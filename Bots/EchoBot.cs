@@ -38,30 +38,16 @@ namespace EchoBot.Bots
             // response
             BotModels.API_RESPONSE response = Newtonsoft.Json.JsonConvert.DeserializeObject<BotModels.API_RESPONSE>(request);
 
-            // convert the date of the response from seconds to date
-            DateTime basicDate = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
-            DateTime sunriseDate = basicDate.AddSeconds(response.sys.sunrise).ToLocalTime();
-            DateTime sunsetDate = basicDate.AddSeconds(response.sys.sunset).ToLocalTime();
+            var message = ((Activity)turnContext.Activity).CreateReply();
 
-            // convert temperature of the response from Kelvin to Celsius
-            float temperature = KelvinToCelsious(response.main.temp);
-            float maxTemperature = KelvinToCelsious(response.main.temp_max);
-            float minTemperature = KelvinToCelsious(response.main.temp_min);
-            float feelsLikeTemp = KelvinToCelsious(response.main.feels_like);
+            // generate reply from the bot
+            // if (turnContext.Activity.Text.StartsWith("c"))
+            // message.AttachmentLayout = AttachmentLayoutTypes.Carousel;
 
-            // reply from the bot
-            var images = new List<CardImage>{
-                new CardImage("https://images-na.ssl-images-amazon.com/images/I/51ZgFK-FbwL.png", "image")
-            };
-
-            var card = new HeroCard(
-                "Weather information",
-                $"{response.name} - {response.sys.country}",
-                $"Sunrise: {sunriseDate}\n\n Sunset: {sunsetDate}\n\nWind speed: {response.wind.speed} m/s\n\nWeather: {response.weather[0].main} ({response.weather[0].description})\n\nTemperature: {temperature} °C\n\nFeels like: {feelsLikeTemp} °C\n\nMaximum temperature: {maxTemperature} °C\n\nMinimum temperature: {minTemperature} °C\n\nPressure: {response.main.pressure} hPa\n\nHumidity: {response.main.humidity}%",
-                images
-            );
-
-            var message = MessageFactory.Attachment(card.ToAttachment());
+            // message.Attachments.Add(CreateAudioCard(response));
+            // message.Attachments.Add(CreateAnimationCard(response));
+            // message.Attachments.Add(CreateVideoCard(response));
+            message.Attachments.Add(CreateHeroCard(response));
 
             // send
             await turnContext.SendActivityAsync(message, cancellationToken);
@@ -77,6 +63,107 @@ namespace EchoBot.Bots
                     await turnContext.SendActivityAsync(MessageFactory.Text(welcomeText, welcomeText), cancellationToken);
                 }
             }
+        }
+
+        private Attachment CreateAudioCard(BotModels.API_RESPONSE response)
+        {
+            // Audio card response
+            var audioCard = new AudioCard
+            {
+                Title = "Havana",
+                Subtitle = "Camila Cabello",
+                Image = new ThumbnailUrl
+                {
+                    Url = "https://en.wikipedia.org/wiki/Havana_(Camila_Cabello_song)#/media/File:Havana_(featuring_Young_Thug)_(Official_Single_Cover)_by_Camila_Cabello.png"
+                },
+                Media = new List<MediaUrl>
+                {
+                    new MediaUrl()
+                    {
+                        Url = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+                    }
+                },
+                Buttons = new List<CardAction>
+                {
+                    new CardAction()
+                    {
+                        Title = "Read More",
+                        Type = ActionTypes.OpenUrl,
+                        Value = "https://en.wikipedia.org/wiki/Havana_(Camila_Cabello_song)"
+                    }
+                }
+            };
+
+            return audioCard.ToAttachment();
+        }
+
+        private Attachment CreateVideoCard(BotModels.API_RESPONSE response)
+        {
+            // Video card response
+            var videoCard = new VideoCard();
+            videoCard.Title = "Weather video information";
+            videoCard.Subtitle = $"{response.name} - {response.sys.country}";
+            videoCard.Autoloop = false;
+            videoCard.Autostart = true;
+            videoCard.Media = new List<MediaUrl> {
+                new MediaUrl("https://www.onirikal.com/videos/mp4/animatic_caronte.mp4")
+            };
+
+            return videoCard.ToAttachment();
+        }
+
+        private Attachment CreateAnimationCard(BotModels.API_RESPONSE response)
+        {
+            // Animation card response
+            var animationCard = new AnimationCard();
+            animationCard.Title = "Weather animation information";
+            animationCard.Subtitle = $"{response.name} - {response.sys.country}";
+            animationCard.Autoloop = false;
+            animationCard.Autostart = true;
+            animationCard.Media = new List<MediaUrl> {
+                new MediaUrl("https://media0.giphy.com/media/26gsad5RsZVhKsUDe/giphy.gif")
+            };
+
+            return animationCard.ToAttachment();
+        }
+
+        private Attachment CreateHeroCard(BotModels.API_RESPONSE response)
+        {
+            // convert the date of the response from seconds to date
+            DateTime basicDate = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
+            DateTime sunriseDate = basicDate.AddSeconds(response.sys.sunrise).ToLocalTime();
+            DateTime sunsetDate = basicDate.AddSeconds(response.sys.sunset).ToLocalTime();
+
+            // convert temperature of the response from Kelvin to Celsius
+            float temperature = KelvinToCelsious(response.main.temp);
+            float maxTemperature = KelvinToCelsious(response.main.temp_max);
+            float minTemperature = KelvinToCelsious(response.main.temp_min);
+            float feelsLikeTemp = KelvinToCelsious(response.main.feels_like);
+
+            // Hero card response
+            var images = new List<CardImage>{
+                new CardImage("https://images-na.ssl-images-amazon.com/images/I/51ZgFK-FbwL.png", "image", new CardAction(ActionTypes.OpenUrl, "Microsoft", value: "https://www.microsoft.com")),
+            };
+
+            var buttons = new List<CardAction>{
+                new CardAction {
+                    Text = "First button",
+                    DisplayText = "Display",
+                    Title = "Title",
+                    Type = ActionTypes.PostBack,
+                    Value = "Value"
+                }
+            };
+
+            var heroCard = new HeroCard(
+                "Weather information",
+                $"{response.name} - {response.sys.country}",
+                $"Sunrise: {sunriseDate}\n\n Sunset: {sunsetDate}\n\nWind speed: {response.wind.speed} m/s\n\nWeather: {response.weather[0].main} ({response.weather[0].description})\n\nTemperature: {temperature} °C\n\nFeels like: {feelsLikeTemp} °C\n\nMaximum temperature: {maxTemperature} °C\n\nMinimum temperature: {minTemperature} °C\n\nPressure: {response.main.pressure} hPa\n\nHumidity: {response.main.humidity}%",
+                images
+            // buttons
+            );
+
+            return heroCard.ToAttachment();
         }
     }
 }
